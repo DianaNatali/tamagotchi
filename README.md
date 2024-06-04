@@ -1,1 +1,1 @@
-## Cada carpeta contiene su propio ```README.md``.
+Cada carpeta contiene su propio ```README.md``.
