@@ -21,6 +21,6 @@ El archivo ```convert2pixels.py``` permite convertir la imagen deseada en un arc
 ```pip install opencv-python```
 
 3. En la línea 3, en el argumento de la función ```cv2.imread()```, pasar como parámetro el nombre del archivo, incluyendo la extensión del mismo.
-4. Cambiar el nombre del archivo ```.txt``` por el nombre deseado, en la línea 17.
+4. Cambiar el nombre del archivo ```.txt``` por el nombre deseado, en la línea 15.
 5. Una vez se ejecute el script, se generará en el directorio un archivo ```.txt``` con 76800 píxeles.
 6. Se debe reemplazar, en la línea 25 del archivo ```ili9341_top```, el nombre del archivo generado en el paso anterior, incluyendo el directorio del mismo.
