@@ -1,0 +1,17 @@
+# Ignorar carpeta build
+build/
+
+# Ignorar archivos de imagen
+*.png
+*.jpeg
+*.jpg
+
+# Ignorar archivos de texto
+*.txt
+
+# Ignorar archivos de Vivado .str
+*.str
+
+# Ignorar archivos .jou y backup.jou
+*.jou
+backup.jou
