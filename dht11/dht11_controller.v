@@ -3,14 +3,15 @@ module dht11_controller #(parameter WAIT_READ=25000000,
                                     INIT_PULSE_UP=3750,
                                     WAIT_RESPONSE_INIT=20000, 
                                     WAIT_50u = 6250,
-                                    ZERO_26u=3250, 
+                                    ZERO_26u=3000, 
                                     ONE_70u=8750)(
     input wire clk,               
     input wire rst,               
     inout wire dht11_io,         
     output reg [15:0] humidity,    
     output reg [15:0] temperature, 
-    output reg valid
+    output reg valid,
+    output reg [2:0] state
 );
 
     reg [2:0] fsm_state;
@@ -74,6 +75,7 @@ module dht11_controller #(parameter WAIT_READ=25000000,
         bit_done <= 'b0;
         clk_50M <= 'b0;
         count_clk50 <= 'b0;
+        state <='b0;
     end
 
     always @(posedge clk) begin
@@ -139,14 +141,15 @@ module dht11_controller #(parameter WAIT_READ=25000000,
                     timer_start_up <= timer_start_up + 1;
                 end
                 WAIT_RESPONSE: begin
-                    if (dht11_io == 1'b0 & timer_response < WAIT_RESPONSE_INIT/2) begin  
-                        timer_response <= timer_response + 1;
-                    end
-                    if (timer_response == WAIT_RESPONSE_INIT/2)begin
-                        if (dht11_io == 1'b1) begin
-                            timer_response <= timer_response + 1;
-                        end
-                    end
+                    // if (dht11_io == 1'b0 & timer_response < 8750) begin  
+                    //     timer_response <= timer_response + 1;
+                    // end
+                    // if (timer_response == 8750)begin
+                    //     if (dht11_io == 1'b1) begin
+                    //         timer_response <= timer_response + 1;
+                    //     end
+                    // end
+                    timer_response <= timer_response + 1;
                 end
                 WAIT_DATA:begin
                     bit_done <= 1'b0;
@@ -187,4 +190,13 @@ module dht11_controller #(parameter WAIT_READ=25000000,
             temperature <= shift_reg[31:16];
         end
     end
+
+    always@(posedge clk)begin
+        if(rst)begin
+            state = 'b0;
+        end else begin
+            state <= fsm_state;
+        end
+    end
+        
 endmodule
