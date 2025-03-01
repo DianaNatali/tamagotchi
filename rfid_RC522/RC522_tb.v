@@ -1,4 +1,5 @@
 `timescale 1ns / 1ps
+`include "rfid_RC522.v"
 
 module rc522_tb();
     reg clk;

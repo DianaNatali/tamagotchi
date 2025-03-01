@@ -27,7 +27,7 @@ module rc522_controller (
     reg spi_start;
     wire spi_done;
 
-    reg [7:0] config_commands [0:]
+    // reg [7:0] config_commands [0:]
 
     spi_master spi (
         .clk(clk),
