@@ -11,7 +11,6 @@ module rc522_tb();
     wire mosi;
     reg miso;
 
-    // Instancia del módulo a probar
     rc522_controller uut (
         .clk(clk),
         .rst(rst),
@@ -24,32 +23,29 @@ module rc522_tb();
         .miso(miso)
     );
 
-    // Generación de reloj
     always #5 clk = ~clk;
 
     initial begin
-        // Inicialización
         clk = 0;
         rst = 1;
         start = 0;
         miso = 0;
         
-        #20 rst = 0; // Desactivar reset
-        #10 start = 1; // Iniciar proceso
+        #20 rst = 0; 
+        #10 start = 1; 
         #10 start = 0;
     end
 
     always @(posedge sck) begin
         if (!cs) begin
-            // Simular respuesta del RC522 (datos recibidos en MISO)
             case (uut.state)
-                uut.DETECT: miso <= 1; // Simular que hay tarjeta
-                uut.ANTICOLLISION: miso <= 8'hAB; // Respuesta simulada UID byte 1
+                uut.DETECT: miso <= 1; 
+                uut.ANTICOLLISION: miso <= 8'hAB; 
                 uut.READ_UID: begin
                     case (uut.uid[31:24])
-                        8'h00: miso <= 8'hCD; // UID byte 2
-                        8'hAB: miso <= 8'hEF; // UID byte 3
-                        8'hCD: miso <= 8'h12; // UID byte 4
+                        8'h00: miso <= 8'hCD; 
+                        8'hAB: miso <= 8'hEF; 
+                        8'hCD: miso <= 8'h12;
                         default: miso <= 8'h00;
                     endcase
                 end
@@ -58,7 +54,9 @@ module rc522_tb();
     end
     
     initial begin
-        #500; // Esperar la simulación
+        #500; 
+        $dumpfile("rfid_controller_tb.vcd");
+        $dumpvars(-1, uut);
         $display("UID leído: %h", uid);
         $finish;
     end
