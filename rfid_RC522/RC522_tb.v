@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `include "rfid_RC522.v"
 
-module rc522_tb();
+module rc522_controller_tb;
     reg clk;
     reg rst;
     reg start;
@@ -24,41 +24,45 @@ module rc522_tb();
         .miso(miso)
     );
 
-    always #5 clk = ~clk;
-
     initial begin
         clk = 0;
+        forever #5 clk = ~clk;
+    end
+
+    initial begin
         rst = 1;
         start = 0;
         miso = 0;
-        
-        #20 rst = 0; 
-        #10 start = 1; 
+
+        #20 rst = 0;
+        #10 start = 1;
         #10 start = 0;
+
+        // wait(done);
+        // #20;
+
+        // #200 $stop;
     end
 
+    reg [7:0] miso_data = 8'h3C; 
+    reg [2:0] bit_index = 7;
+    
     always @(posedge sck) begin
         if (!cs) begin
-            case (uut.state)
-                uut.DETECT: miso <= 1; 
-                uut.ANTICOLLISION: miso <= 8'hAB; 
-                uut.READ_UID: begin
-                    case (uut.uid[31:24])
-                        8'h00: miso <= 8'hCD; 
-                        8'hAB: miso <= 8'hEF; 
-                        8'hCD: miso <= 8'h12;
-                        default: miso <= 8'h00;
-                    endcase
-                end
-            endcase
+            miso <= miso_data[bit_index];
+            if (bit_index == 0)
+                bit_index <= 7;
+            else
+                bit_index <= bit_index - 1;
+        end else begin
+            bit_index <= 7;
         end
     end
-    
-    initial begin
-        #500; 
+
+    initial begin: TEST_CASE
         $dumpfile("rfid_controller_tb.vcd");
         $dumpvars(-1, uut);
         $display("UID leído: %h", uid);
-        $finish;
+        #(1000) $finish;
     end
 endmodule

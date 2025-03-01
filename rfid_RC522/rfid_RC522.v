@@ -29,6 +29,13 @@ module rc522_controller (
 
     // reg [7:0] config_commands [0:]
 
+    initial begin
+        state <= IDLE;
+        done <= 'b0;
+        spi_data_out <= 'b0;
+        uid <= 'b0;
+    end
+
     spi_master spi (
         .clk(clk),
         .rst(rst),
@@ -38,7 +45,8 @@ module rc522_controller (
         .sck(sck),
         .mosi(mosi),
         .miso(miso),
-        .cs(cs)
+        .cs(cs),
+        .spi_done(spi_done)
     );
 
     always @(posedge clk) begin
@@ -94,6 +102,7 @@ module rc522_controller (
                     spi_data_out = 8'h93;
                 end
                 READ_UID: begin
+                    spi_data_out = 8'h00;
                     uid = {uid[23:0], spi_data_in}; // Guarda el UID leído
                 end
                 DONE: begin
