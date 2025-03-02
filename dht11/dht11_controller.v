@@ -1,9 +1,9 @@
 module dht11_controller #(parameter WAIT_READ=25000000, 
                                     INIT_PULSE_DOWN=2250000, 
                                     INIT_PULSE_UP=3750,
-                                    WAIT_RESPONSE_INIT=20000, 
+                                    WAIT_RESPONSE_INIT=18125, //teniendo ene cuenta q S3 esta durando 145us
                                     WAIT_50u = 6250,
-                                    ZERO_26u=3000, 
+                                    ZERO_24u=3000, 
                                     ONE_70u=8750)(
     input wire clk,               
     input wire rst,               
@@ -12,19 +12,28 @@ module dht11_controller #(parameter WAIT_READ=25000000,
     output reg [15:0] temperature, 
     output reg valid,
     output reg [2:0] state
+    // output reg [39:0] data_out
 );
 
     reg [2:0] fsm_state;
     reg [2:0] next_state;
     reg [39:0] shift_reg;
     reg [5:0] bit_count;
+    wire [5:0] reg_timer_bits;
     reg [$clog2(WAIT_READ)-1:0] timer_init; 
     reg [$clog2(INIT_PULSE_UP)-1:0] timer_start_up;
     reg [$clog2(INIT_PULSE_DOWN)-1:0] timer_start_down; 
     reg [$clog2(WAIT_RESPONSE_INIT)-1:0] timer_response; 
     reg [$clog2(WAIT_50u)-1:0] timer_wait_data; 
     reg [$clog2(ONE_70u)-1:0] timer_bits;
-    reg bit_done;                       
+    reg bit_done;  
+    reg [7:0] sum_reg; 
+    reg [7:0] sum_reg1;
+    reg [7:0] sum_reg2;
+    reg [7:0] sum_reg3;
+    reg [7:0] sum_reg4;  
+    reg [7:0] sum_reg5;
+    reg [7:0] checksum;                       
 
     reg dht11_out;
     wire dht11_dir;
@@ -54,9 +63,8 @@ module dht11_controller #(parameter WAIT_READ=25000000,
     localparam START_DOWN    = 3'b001;
     localparam START_UP      = 3'b010;
     localparam WAIT_RESPONSE = 3'b011;
-    localparam WAIT_DATA     = 3'b100;
-    localparam RECEIVE_BITS  = 3'b101;
-    localparam CHECKSUM      = 3'b110;
+    localparam RECEIVE_BITS  = 3'b100;
+    localparam CHECKSUM      = 3'b101;
 
     initial begin
         dht11_out <= 1'b1;
@@ -69,13 +77,13 @@ module dht11_controller #(parameter WAIT_READ=25000000,
         timer_response <= 'b0;
         timer_wait_data <= 'b0;
         timer_bits <= 'b0;
-        bit_count <= 'b0;
         shift_reg <= 'b0;
         fsm_state <= IDLE;
         bit_done <= 'b0;
         clk_50M <= 'b0;
         count_clk50 <= 'b0;
         state <='b0;
+        bit_count <='b0;
     end
 
     always @(posedge clk) begin
@@ -87,7 +95,6 @@ module dht11_controller #(parameter WAIT_READ=25000000,
     end
 
     always @(*) begin
-        // next_state = fsm_state;
         case(fsm_state)
             IDLE: begin 
                 next_state = (timer_init == WAIT_READ)? START_DOWN : IDLE;
@@ -99,16 +106,13 @@ module dht11_controller #(parameter WAIT_READ=25000000,
                 next_state = (timer_start_up == INIT_PULSE_UP)? WAIT_RESPONSE : START_UP;
             end
             WAIT_RESPONSE: begin
-                next_state = (timer_response == WAIT_RESPONSE_INIT & dht11_io == 0)? RECEIVE_BITS : WAIT_RESPONSE;
-            end
-            WAIT_DATA:begin
-                next_state = (timer_wait_data == WAIT_50u & dht11_io == 1)? RECEIVE_BITS : WAIT_DATA;  
+                next_state = (timer_response == WAIT_RESPONSE_INIT)? RECEIVE_BITS : WAIT_RESPONSE;
             end
             RECEIVE_BITS: begin
-                next_state = (bit_count < 40)? ((bit_done)? WAIT_DATA: RECEIVE_BITS) : CHECKSUM;
+                next_state = (bit_count == 39)? CHECKSUM : RECEIVE_BITS;
             end
             CHECKSUM: begin
-                next_state = IDLE;
+                next_state = (valid)? IDLE : CHECKSUM;
             end
         endcase
     end
@@ -123,9 +127,9 @@ module dht11_controller #(parameter WAIT_READ=25000000,
             timer_response <= 'b0;
             timer_wait_data <= 'b0;
             timer_bits <= 'b0;
-            bit_count <= 'b0;
             shift_reg <= 'b0;
             bit_done <= 1'b0;
+            bit_count <='b0;
         end else begin
             case (next_state)
                 IDLE: begin
@@ -141,38 +145,23 @@ module dht11_controller #(parameter WAIT_READ=25000000,
                     timer_start_up <= timer_start_up + 1;
                 end
                 WAIT_RESPONSE: begin
-                    // if (dht11_io == 1'b0 & timer_response < 8750) begin  
-                    //     timer_response <= timer_response + 1;
-                    // end
-                    // if (timer_response == 8750)begin
-                    //     if (dht11_io == 1'b1) begin
-                    //         timer_response <= timer_response + 1;
-                    //     end
-                    // end
                     timer_response <= timer_response + 1;
-                end
-                WAIT_DATA:begin
-                    bit_done <= 1'b0;
                     timer_bits <= 'b0;
-                    if (dht11_io == 1'b0) begin
-                        timer_wait_data <= timer_wait_data + 1;
-                    end
                 end
                 RECEIVE_BITS: begin
+                    timer_bits <= 'b0;
                     if(dht11_io == 1'b1) begin
                         timer_bits <= timer_bits +1;
-                    end else begin
-                        if(timer_bits == ZERO_26u)begin
-                            shift_reg <= {shift_reg[38:0], 1'b0};
-                            bit_done <= 1'b1;
-                        end else if (timer_bits == ONE_70u)begin
-                            shift_reg <= {shift_reg[38:0], 1'b1};
-                            bit_done <= 1'b1;
-                        end
-                    end
+                    end 
                 end
                 CHECKSUM: begin
-                    valid <= (shift_reg[7:0] + shift_reg[15:8] + shift_reg[23:16] + shift_reg[31:24] == shift_reg[39:32]) ;
+                    sum_reg1 <= shift_reg[7:0]; 
+                    sum_reg2 <= shift_reg[15:8]; 
+                    sum_reg3 <= shift_reg[23:16];
+                    sum_reg4 <= shift_reg[31:24];  
+                    sum_reg  <= sum_reg1 +sum_reg2 + sum_reg3 +sum_reg4;
+                    checksum <= shift_reg[39:32]; 
+                    valid <= (sum_reg == checksum) ;
                 end
             endcase
         end
@@ -180,6 +169,25 @@ module dht11_controller #(parameter WAIT_READ=25000000,
 
     assign dht11_dir = (fsm_state == START_UP || fsm_state == START_DOWN)? 1'b1 : 1'b0;
 
+    
+    always@(posedge clk)begin
+        if(rst) begin
+            timer_bits <= 'b0;
+            bit_count <= 'b0;
+        end else begin
+            if (fsm_state == RECEIVE_BITS) begin
+                if (reg_timer_bits == ONE_70u || reg_timer_bits == ZERO_24u) begin
+                    shift_reg[bit_count] <= (reg_timer_bits == ONE_70u) ? 1'b1 : 1'b0;
+                    bit_count <= bit_count + 1;  
+                end else if (fsm_state == CHECKSUM) begin
+                    bit_count <= 'b0;
+                end
+            end
+        end
+    end
+
+    assign reg_timer_bits = (dht11_io == 0)? timer_bits : 'b0;
+   
 
     always@(posedge clk)begin
         if(rst)begin
@@ -187,7 +195,7 @@ module dht11_controller #(parameter WAIT_READ=25000000,
             temperature <= 0;
         end else begin
             humidity <= shift_reg[15:0];
-            temperature <= shift_reg[31:16];
+            temperature<= shift_reg[31:16];
         end
     end
 
