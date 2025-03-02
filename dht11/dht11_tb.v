@@ -18,7 +18,7 @@ module dht11_controller_TB();
         .clk(clk),
         .rst(rst), 
         .dht11_io(dht11_io),
-        .data_out(data_o),
+        // .data_out(data_o),
         .valid(valid)
     );
 
@@ -41,9 +41,9 @@ module dht11_controller_TB();
         integer i;
         reg [39:0] full_data;
       begin
-        full_data = {hum_int, hum_dec, temp_int, temp_dec, checksum};
+        full_data = {checksum, temp_dec, temp_int, hum_dec, hum_int};
         
-        for (i = 39; i >= 0; i = i - 1) begin
+        for (i = 0; i <= 39; i = i + 1) begin
           @(posedge clk);
           data_drive = 1;
           data_out = 0; 

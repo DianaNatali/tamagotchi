@@ -155,13 +155,14 @@ module dht11_controller #(parameter WAIT_READ=25000000,
                     end 
                 end
                 CHECKSUM: begin
-                    sum_reg1 <= shift_reg[7:0]; 
-                    sum_reg2 <= shift_reg[15:8]; 
+                    sum_reg1 <= shift_reg[7:0];
+                    sum_reg2 <= shift_reg[15:8];
                     sum_reg3 <= shift_reg[23:16];
-                    sum_reg4 <= shift_reg[31:24];  
-                    sum_reg  <= sum_reg1 +sum_reg2 + sum_reg3 +sum_reg4;
-                    checksum <= shift_reg[39:32]; 
-                    valid <= (sum_reg == checksum) ;
+                    sum_reg4 <= shift_reg[31:24];
+                    sum_reg5 <= shift_reg[39:32];
+                    sum_reg <= shift_reg[7:0] + shift_reg[15:8] + shift_reg[23:16] + shift_reg[31:24];
+                    checksum <= shift_reg[39:32];
+                    valid <= (shift_reg[7:0] + shift_reg[15:8] + shift_reg[23:16] + shift_reg[31:24] == shift_reg[39:32]) ;
                 end
             endcase
         end
@@ -177,7 +178,7 @@ module dht11_controller #(parameter WAIT_READ=25000000,
         end else begin
             if (fsm_state == RECEIVE_BITS) begin
                 if (reg_timer_bits == ONE_70u || reg_timer_bits == ZERO_24u) begin
-                    shift_reg[bit_count] <= (reg_timer_bits == ONE_70u) ? 1'b1 : 1'b0;
+                    shift_reg[bit_count] <=  (reg_timer_bits == ONE_70u) ? 1'b1 : 1'b0;
                     bit_count <= bit_count + 1;  
                 end else if (fsm_state == CHECKSUM) begin
                     bit_count <= 'b0;
