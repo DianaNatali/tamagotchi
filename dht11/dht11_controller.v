@@ -11,7 +11,7 @@ module dht11_controller #(parameter WAIT_READ=25000000,
     output reg [15:0] humidity,    
     output reg [15:0] temperature, 
     output reg valid,
-    output reg [2:0] state
+    output [2:0] state
     // output reg [39:0] data_out
 );
 
@@ -82,7 +82,6 @@ module dht11_controller #(parameter WAIT_READ=25000000,
         bit_done <= 'b0;
         clk_50M <= 'b0;
         count_clk50 <= 'b0;
-        state <='b0;
         bit_count <='b0;
     end
 
@@ -200,12 +199,6 @@ module dht11_controller #(parameter WAIT_READ=25000000,
         end
     end
 
-    always@(posedge clk)begin
-        if(rst)begin
-            state = 'b0;
-        end else begin
-            state <= fsm_state;
-        end
-    end
+    assign state = fsm_state;
         
 endmodule
