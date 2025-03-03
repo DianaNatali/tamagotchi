@@ -14,7 +14,7 @@ module dht11_controller_TB();
     reg dht11_sim; 
     reg dht11_dir_sim; 
 
-    dht11_controller #(2500, 9000, 15, 80, 25, 26, 29) uut (
+    dht11_controller #(2500, 9000, 15, 80, 25, 26, 61) uut (
         .clk(clk),
         .rst(rst), 
         .dht11_io(dht11_io),

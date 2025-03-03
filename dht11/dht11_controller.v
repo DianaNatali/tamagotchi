@@ -151,9 +151,15 @@ module dht11_controller #(parameter WAIT_READ=25000000,
                     timer_bits <= 'b0;
                     if(dht11_io == 1'b1) begin
                         timer_bits <= timer_bits +1;
-                    end 
+                    end  else begin
+                        if (timer_bits == ONE_70u || timer_bits == ZERO_24u) begin
+                            shift_reg[bit_count] <=  (timer_bits == ONE_70u) ? 1'b1 : 1'b0;
+                            bit_count <= bit_count + 1;  
+                        end 
+                    end
                 end
                 CHECKSUM: begin
+                    bit_count <= 'b0;
                     sum_reg1 <= shift_reg[7:0];
                     sum_reg2 <= shift_reg[15:8];
                     sum_reg3 <= shift_reg[23:16];
@@ -170,23 +176,23 @@ module dht11_controller #(parameter WAIT_READ=25000000,
     assign dht11_dir = (fsm_state == START_UP || fsm_state == START_DOWN)? 1'b1 : 1'b0;
 
     
-    always@(posedge clk)begin
-        if(rst) begin
-            timer_bits <= 'b0;
-            bit_count <= 'b0;
-        end else begin
-            if (fsm_state == RECEIVE_BITS) begin
-                if (reg_timer_bits == ONE_70u || reg_timer_bits == ZERO_24u) begin
-                    shift_reg[bit_count] <=  (reg_timer_bits == ONE_70u) ? 1'b1 : 1'b0;
-                    bit_count <= bit_count + 1;  
-                end else if (fsm_state == CHECKSUM) begin
-                    bit_count <= 'b0;
-                end
-            end
-        end
-    end
+    // always@(posedge clk)begin
+    //     if(rst) begin
+    //         timer_bits <= 'b0;
+    //         bit_count <= 'b0;
+    //     end else begin
+    //         if (fsm_state == RECEIVE_BITS) begin
+    //             if (reg_timer_bits == ONE_70u || reg_timer_bits == ZERO_24u) begin
+    //                 shift_reg[bit_count] <=  (reg_timer_bits == ONE_70u) ? 1'b1 : 1'b0;
+    //                 bit_count <= bit_count + 1;  
+    //             end else if (fsm_state == CHECKSUM) begin
+    //                 bit_count <= 'b0;
+    //             end
+    //         end
+    //     end
+    // end
 
-    assign reg_timer_bits = (dht11_io == 0)? timer_bits : 'b0;
+    // assign reg_timer_bits = (dht11_io == 0)? timer_bits : 'b0;
    
 
     always@(posedge clk)begin
