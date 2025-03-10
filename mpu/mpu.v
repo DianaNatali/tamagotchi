@@ -169,6 +169,4 @@ module mpu6050_i2c (
         end
     end
 
-    assign state_o = state;
-
 endmodule
