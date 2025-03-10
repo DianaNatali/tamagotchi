@@ -1,0 +1,184 @@
+#-----------------------------------------------------------
+# Vivado v2023.2 (64-bit)
+# SW Build 4029153 on Fri Oct 13 20:13:54 MDT 2023
+# IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+# SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+# Start of session at: Tue Feb 25 07:52:27 2025
+# Process ID: 4938
+# Current directory: /home/dnmaldonador/Documents/2024/digital_I/projects/tamagotchi
+# Command line: vivado
+# Log file: /home/dnmaldonador/Documents/2024/digital_I/projects/tamagotchi/vivado.log
+# Journal file: /home/dnmaldonador/Documents/2024/digital_I/projects/tamagotchi/vivado.jou
+# Running On: dnmaldonador, OS: Linux, CPU Frequency: 1400.000 MHz, CPU Physical cores: 12, Host memory: 10275 MB
+#-----------------------------------------------------------
+start_gui
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vek280_es:part0:1.0 available at /tools/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vek280/es/rev_a/1.0/board.xml as part xcve2802-vsvh1760-2lp-e-s-es1 specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vek280_es:part0:1.1 available at /tools/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vek280/es/rev_a/1.1/board.xml as part xcve2802-vsvh1760-2lp-e-s-es1 specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vek280_es_revb:part0:1.0 available at /tools/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vek280/es/rev_b/1.0/board.xml as part xcve2802-vsvh1760-2mp-e-s-es1 specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vek280_es_revb:part0:1.1 available at /tools/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vek280/es/rev_b/1.1/board.xml as part xcve2802-vsvh1760-2mp-e-s-es1 specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vhk158_es:part0:1.0 available at /tools/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vhk158/es/1.0/board.xml as part xcvh1582-vsva3697-2mp-e-s-es1 specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:vhk158_es:part0:1.1 available at /tools/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/vhk158/es/1.1/board.xml as part xcvh1582-vsva3697-2mp-e-s-es1 specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu208ld:part0:2.0 available at /tools/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu208ld/production/2.0/board.xml as part xczu58dr-fsvg1517-2-i specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu216ld:part0:2.0 available at /tools/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu216ld/production/2.0/board.xml as part xczu59dr-ffvf1760-2-i specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu670:part0:2.0 available at /tools/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu670/2.0/board.xml as part xczu67dr-fsve1156-2-i specified in board_part file is either invalid or not available
+WARNING: [Board 49-26] cannot add Board Part xilinx.com:zcu670ld:part0:1.0 available at /tools/Xilinx/Vivado/2023.2/data/xhub/boards/XilinxBoardStore/boards/Xilinx/zcu670ld/1.0/board.xml as part xczu57dr-fsve1156-2-i specified in board_part file is either invalid or not available
+open_project /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.xpr
+INFO: [filemgmt 56-3] Default IP Output Path : Could not find the directory '/home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.gen/sources_1'.
+Scanning sources...
+Finished scanning sources
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/tools/Xilinx/Vivado/2023.2/data/ip'.
+open_hw_manager
+connect_hw_server -allow_non_jtag
+INFO: [Labtools 27-2285] Connecting to hw_server url TCP:localhost:3121
+INFO: [Labtools 27-2222] Launching hw_server...
+INFO: [Labtools 27-2221] Launch Output:
+
+****** Xilinx hw_server v2023.2
+  **** Build date : Oct 13 2023 at 20:26:23
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+
+INFO: [Labtools 27-3415] Connecting to cs_server url TCP:localhost:0
+INFO: [Labtools 27-3417] Launching cs_server...
+INFO: [Labtools 27-2221] Launch Output:
+
+
+******** Xilinx cs_server v2023.2.0
+  ****** Build date   : Oct 09 2023-23:01:56
+    **** Build number : 2023.2.1696910516
+      ** Copyright 2017-2022 Xilinx, Inc. All Rights Reserved.
+      ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+
+
+open_hw_target
+INFO: [Labtoolstcl 44-466] Opening hw_target localhost:3121/xilinx_tcf/Digilent/210351A81D30A
+current_hw_device [get_hw_devices xc7z020_1]
+refresh_hw_device -update_hw_probes false [lindex [get_hw_devices xc7z020_1] 0]
+INFO: [Labtools 27-1434] Device xc7z020 (JTAG device index = 1) is programmed with a design that has no supported debug core(s) in it.
+update_compile_order -fileset sources_1
+reset_run synth_1
+WARNING: [Vivado 12-1017] Problems encountered:
+1. Attempt to kill process failed
+
+launch_runs synth_1 -jobs 6
+[Tue Feb 25 07:56:20 2025] Launched synth_1...
+Run output will be captured here: /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/synth_1/runme.log
+launch_runs impl_1 -jobs 6
+[Tue Feb 25 07:57:06 2025] Launched impl_1...
+Run output will be captured here: /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/impl_1/runme.log
+launch_runs impl_1 -to_step write_bitstream -jobs 6
+[Tue Feb 25 07:58:06 2025] Launched impl_1...
+Run output will be captured here: /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/impl_1/runme.log
+set_property PROBES.FILE {} [get_hw_devices xc7z020_1]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7z020_1]
+set_property PROGRAM.FILE {/home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/impl_1/dht11_controller.bit} [get_hw_devices xc7z020_1]
+program_hw_devices [get_hw_devices xc7z020_1]
+INFO: [Labtools 27-3164] End of startup status: HIGH
+refresh_hw_device [lindex [get_hw_devices xc7z020_1] 0]
+INFO: [Labtools 27-1434] Device xc7z020 (JTAG device index = 1) is programmed with a design that has no supported debug core(s) in it.
+reset_run synth_1
+INFO: [Project 1-1161] Replacing file /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.srcs/utils_1/imports/synth_1/dht11_controller.dcp with file /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/synth_1/dht11_controller.dcp
+launch_runs synth_1 -jobs 6
+[Tue Feb 25 08:15:51 2025] Launched synth_1...
+Run output will be captured here: /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/synth_1/runme.log
+reset_run synth_1
+launch_runs synth_1 -jobs 6
+[Tue Feb 25 08:16:18 2025] Launched synth_1...
+Run output will be captured here: /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/synth_1/runme.log
+launch_runs impl_1 -jobs 6
+[Tue Feb 25 08:17:09 2025] Launched impl_1...
+Run output will be captured here: /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/impl_1/runme.log
+reset_run synth_1
+INFO: [Project 1-1161] Replacing file /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.srcs/utils_1/imports/synth_1/dht11_controller.dcp with file /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/synth_1/dht11_controller.dcp
+launch_runs synth_1 -jobs 6
+[Tue Feb 25 08:18:22 2025] Launched synth_1...
+Run output will be captured here: /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/synth_1/runme.log
+launch_runs impl_1 -jobs 6
+[Tue Feb 25 08:19:09 2025] Launched impl_1...
+Run output will be captured here: /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/impl_1/runme.log
+launch_runs impl_1 -to_step write_bitstream -jobs 6
+[Tue Feb 25 08:20:06 2025] Launched impl_1...
+Run output will be captured here: /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/impl_1/runme.log
+set_property PROBES.FILE {} [get_hw_devices xc7z020_1]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7z020_1]
+set_property PROGRAM.FILE {/home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/impl_1/dht11_controller.bit} [get_hw_devices xc7z020_1]
+program_hw_devices [get_hw_devices xc7z020_1]
+INFO: [Labtools 27-3164] End of startup status: HIGH
+refresh_hw_device [lindex [get_hw_devices xc7z020_1] 0]
+INFO: [Labtools 27-1434] Device xc7z020 (JTAG device index = 1) is programmed with a design that has no supported debug core(s) in it.
+reset_run synth_1
+INFO: [Project 1-1161] Replacing file /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.srcs/utils_1/imports/synth_1/dht11_controller.dcp with file /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/synth_1/dht11_controller.dcp
+launch_runs synth_1 -jobs 6
+[Tue Feb 25 08:22:16 2025] Launched synth_1...
+Run output will be captured here: /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/synth_1/runme.log
+reset_run synth_1
+INFO: [Project 1-1161] Replacing file /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.srcs/utils_1/imports/synth_1/dht11_controller.dcp with file /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/synth_1/dht11_controller.dcp
+launch_runs synth_1 -jobs 6
+[Tue Feb 25 08:31:04 2025] Launched synth_1...
+Run output will be captured here: /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/synth_1/runme.log
+launch_runs impl_1 -jobs 6
+[Tue Feb 25 08:32:29 2025] Launched impl_1...
+Run output will be captured here: /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/impl_1/runme.log
+launch_runs impl_1 -to_step write_bitstream -jobs 6
+WARNING: [Vivado 12-872] Run step 'Design Initialization' is out-of-date.
+[Tue Feb 25 08:34:35 2025] Launched impl_1...
+Run output will be captured here: /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/impl_1/runme.log
+set_property PROBES.FILE {} [get_hw_devices xc7z020_1]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7z020_1]
+set_property PROGRAM.FILE {/home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/impl_1/dht11_controller.bit} [get_hw_devices xc7z020_1]
+program_hw_devices [get_hw_devices xc7z020_1]
+INFO: [Labtools 27-3164] End of startup status: HIGH
+refresh_hw_device [lindex [get_hw_devices xc7z020_1] 0]
+INFO: [Labtools 27-1434] Device xc7z020 (JTAG device index = 1) is programmed with a design that has no supported debug core(s) in it.
+reset_run synth_1
+INFO: [Project 1-1161] Replacing file /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.srcs/utils_1/imports/synth_1/dht11_controller.dcp with file /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/synth_1/dht11_controller.dcp
+launch_runs synth_1 -jobs 6
+[Tue Feb 25 08:37:21 2025] Launched synth_1...
+Run output will be captured here: /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/synth_1/runme.log
+launch_runs impl_1 -jobs 6
+[Tue Feb 25 08:38:12 2025] Launched impl_1...
+Run output will be captured here: /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/impl_1/runme.log
+launch_runs impl_1 -to_step write_bitstream -jobs 6
+[Tue Feb 25 08:39:17 2025] Launched impl_1...
+Run output will be captured here: /home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/impl_1/runme.log
+open_run impl_1
+INFO: [Device 21-403] Loading part xc7z020clg400-1
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.01 . Memory (MB): peak = 8542.738 ; gain = 0.000 ; free physical = 1695 ; free virtual = 3186
+INFO: [Netlist 29-17] Analyzing 29 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-479] Netlist was created with Vivado 2023.2
+INFO: [Project 1-570] Preparing netlist for logic optimization
+Read ShapeDB Complete: Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00 . Memory (MB): peak = 8608.520 ; gain = 0.000 ; free physical = 1605 ; free virtual = 3097
+INFO: [Timing 38-478] Restoring timing data from binary archive.
+INFO: [Timing 38-479] Binary timing data restore complete.
+INFO: [Project 1-856] Restoring constraints from binary archive.
+INFO: [Project 1-853] Binary constraint restore complete.
+INFO: [Designutils 20-5722] Start Reading Physical Databases.
+Reading placement.
+Read Netlist Cache: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 9205.754 ; gain = 0.000 ; free physical = 1091 ; free virtual = 2585
+Reading placer database...
+Read Device Cache: Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.02 . Memory (MB): peak = 9205.754 ; gain = 0.000 ; free physical = 1091 ; free virtual = 2585
+Read PlaceDB: Time (s): cpu = 00:00:00.02 ; elapsed = 00:00:00.01 . Memory (MB): peak = 9205.754 ; gain = 0.000 ; free physical = 1091 ; free virtual = 2585
+Read PulsedLatchDB: Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 9205.754 ; gain = 0.000 ; free physical = 1091 ; free virtual = 2585
+Reading routing.
+Read RouteStorage: Time (s): cpu = 00:00:00.01 ; elapsed = 00:00:00.01 . Memory (MB): peak = 9205.754 ; gain = 0.000 ; free physical = 1091 ; free virtual = 2585
+Read Physdb Files: Time (s): cpu = 00:00:00.04 ; elapsed = 00:00:00.05 . Memory (MB): peak = 9215.754 ; gain = 10.000 ; free physical = 1091 ; free virtual = 2585
+Restored from archive | CPU: 0.040000 secs | Memory: 0.425568 MB |
+Finished XDEF File Restore: Time (s): cpu = 00:00:00.04 ; elapsed = 00:00:00.05 . Memory (MB): peak = 9215.754 ; gain = 10.000 ; free physical = 1091 ; free virtual = 2585
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 9215.754 ; gain = 0.000 ; free physical = 1091 ; free virtual = 2585
+INFO: [Project 1-111] Unisim Transformation Summary:
+  A total of 1 instances were transformed.
+  IOBUF => IOBUF (IBUF, OBUFT): 1 instance 
+
+open_run: Time (s): cpu = 00:00:17 ; elapsed = 00:00:13 . Memory (MB): peak = 9429.598 ; gain = 1211.188 ; free physical = 923 ; free virtual = 2436
+set_property PROBES.FILE {} [get_hw_devices xc7z020_1]
+set_property FULL_PROBES.FILE {} [get_hw_devices xc7z020_1]
+set_property PROGRAM.FILE {/home/dnmaldonador/Documents/2024/digital_I/projects/dht11/test_dht11/test_dht11.runs/impl_1/dht11_controller.bit} [get_hw_devices xc7z020_1]
+program_hw_devices [get_hw_devices xc7z020_1]
+INFO: [Labtools 27-3164] End of startup status: HIGH
+refresh_hw_device [lindex [get_hw_devices xc7z020_1] 0]
+INFO: [Labtools 27-1434] Device xc7z020 (JTAG device index = 1) is programmed with a design that has no supported debug core(s) in it.
+ERROR: [Labtoolstcl 44-513] HW Target shutdown. Closing target: localhost:3121/xilinx_tcf/Digilent/210351A81D30A
