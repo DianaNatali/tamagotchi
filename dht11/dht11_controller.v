@@ -1,64 +1,55 @@
-module dht11_controller #(parameter WAIT_READ=25000000, 
-                                    INIT_PULSE_DOWN=2250000, 
-                                    INIT_PULSE_UP=3750,
-                                    WAIT_RESPONSE_INIT=18125, //teniendo ene cuenta q S3 esta durando 145us
-                                    WAIT_50u = 6250,
-                                    ZERO_24u=3000, 
-                                    ONE_70u=8750)(
-    input wire clk,               
-    input wire rst,               
-    inout wire dht11_io,         
-    output reg [15:0] humidity,    
-    output reg [15:0] temperature, 
-    output reg valid,
-    output [2:0] state
-    // output reg [39:0] data_out
+module dht11_controller #(
+    parameter WAIT_READ = 100000000,       // Tiempo de espera entre lecturas
+    parameter INIT_PULSE_DOWN = 900000,   // Duración del pulso inicial bajo
+    parameter INIT_PULSE_UP = 1500,        // Duración del pulso inicial alto
+    parameter WAIT_RESPONSE_INIT = 8500,   // Tiempo de espera para la respuesta del sensor
+    parameter WAIT_50u = 6250,             // Tiempo de espera de 50 µs
+    parameter ZERO_24u = 1300,             // Duración de un bit '0' (24 µs)
+    parameter ONE_70u = 3600,              // Duración de un bit '1' (70 µs)
+    parameter DATA_BITS = 40,              // Número de bits de datos
+    parameter COUNT_LCD = 800000           // Parámetro para el controlador LCD
+)(
+    input wire clk,                        // Señal de reloj
+    input wire rst,                        // Señal de reset
+    inout wire dht11_io,                   // Señal bidireccional para el sensor DHT11
+    output reg valid,                      // Señal de dato válido
+    output [2:0] state,                    // Estado actual de la FSM
+    output reg flag,                       // Bandera de depuración
+    output rs,                             // Señal RS para el LCD
+    output rw,                             // Señal RW para el LCD
+    output enable,                         // Señal Enable para el LCD
+    output ready2wr,                       // Señal de listo para escribir en el LCD
+    output [7:0] data                      // Datos para el LCD
 );
 
+    // Registros para la máquina de estados
     reg [2:0] fsm_state;
     reg [2:0] next_state;
-    reg [39:0] shift_reg;
-    reg [5:0] bit_count;
-    wire [5:0] reg_timer_bits;
-    reg [$clog2(WAIT_READ)-1:0] timer_init; 
-    reg [$clog2(INIT_PULSE_UP)-1:0] timer_start_up;
-    reg [$clog2(INIT_PULSE_DOWN)-1:0] timer_start_down; 
-    reg [$clog2(WAIT_RESPONSE_INIT)-1:0] timer_response; 
-    reg [$clog2(WAIT_50u)-1:0] timer_wait_data; 
-    reg [$clog2(ONE_70u)-1:0] timer_bits;
-    reg bit_done;  
-    reg [7:0] sum_reg; 
-    reg [7:0] sum_reg1;
-    reg [7:0] sum_reg2;
-    reg [7:0] sum_reg3;
-    reg [7:0] sum_reg4;  
-    reg [7:0] sum_reg5;
-    reg [7:0] checksum;                       
 
+    // Registros para almacenar los datos recibidos
+    reg [DATA_BITS-1:0] shift_reg;
+
+    // Contadores y temporizadores
+    reg [$clog2(DATA_BITS)-1:0] bit_count;
+    reg [$clog2(WAIT_READ)-1:0] timer_init;
+    reg [$clog2(INIT_PULSE_UP)-1:0] timer_start_up;
+    reg [$clog2(INIT_PULSE_DOWN)-1:0] timer_start_down;
+    reg [$clog2(WAIT_RESPONSE_INIT)-1:0] timer_response;
+    reg [$clog2(WAIT_50u)-1:0] timer_wait_data;
+    reg [$clog2(ONE_70u)-1:0] timer_bits;
+
+    // Registros para el cálculo del checksum
+    reg [7:0] sum_reg1, sum_reg2, sum_reg3, sum_reg4, checksum;
+
+    // Señales de control
     reg dht11_out;
     wire dht11_dir;
-    
-    
-    reg [2:0] count_clk50; // Contador de 2 bits
-    reg clk_50M;
 
-    always @(posedge clk) begin
-        if (rst) begin
-            count_clk50 <= 0;
-            clk_50M <= 0;
-        end else begin
-            if (count_clk50 == 2) begin  // Alternar entre 2 y 3 ciclos
-                count_clk50 <= 0;
-                clk_50M <= ~clk_50M; // Cambia cada 2.5 ciclos en promedio
-            end else begin
-                count_clk50 <= count_clk50 + 1;
-            end
-        end
-    end
-      
+    // Sincronización de la señal dht11_io
+    reg dht11_io_sync;
+    reg dht11_io_prev;
 
-    assign dht11_io = dht11_dir ? dht11_out : 1'bz;
-
+    // Estados de la FSM
     localparam IDLE          = 3'b000;
     localparam START_DOWN    = 3'b001;
     localparam START_UP      = 3'b010;
@@ -66,74 +57,96 @@ module dht11_controller #(parameter WAIT_READ=25000000,
     localparam RECEIVE_BITS  = 3'b100;
     localparam CHECKSUM      = 3'b101;
 
+    // Asignación de la señal bidireccional
+    assign dht11_io = dht11_dir ? dht11_out : 1'bz;
+
+    // Inicialización
     initial begin
         dht11_out <= 1'b1;
-        humidity <= 'b0;
-        temperature <= 'b0;
         valid <= 1'b0;
-        timer_init <= 'b0;
-        timer_start_up <= 'b0;
-        timer_start_down <= 'b0;
-        timer_response <= 'b0;
-        timer_wait_data <= 'b0;
-        timer_bits <= 'b0;
-        shift_reg <= 'b0;
+        timer_init <= 0;
+        timer_start_up <= 0;
+        timer_start_down <= 0;
+        timer_response <= 0;
+        timer_wait_data <= 0;
+        timer_bits <= 0;
+        shift_reg <= 0;
         fsm_state <= IDLE;
-        bit_done <= 'b0;
-        clk_50M <= 'b0;
-        count_clk50 <= 'b0;
-        bit_count <='b0;
+        bit_count <= 0;
+        flag <= 0;
+        dht11_io_prev <= 1'b1;
     end
 
+    // Sincronización de la señal dht11_io
     always @(posedge clk) begin
-        if (rst) begin
+        dht11_io_sync <= dht11_io;
+        dht11_io_prev <= dht11_io_sync;
+    end
+
+    // Lógica de la FSM
+    always @(posedge clk) begin
+        if (rst == 0) begin
             fsm_state <= IDLE;
         end else begin
             fsm_state <= next_state;
         end
     end
 
+    // Transiciones de la FSM
     always @(*) begin
-        case(fsm_state)
-            IDLE: begin 
-                next_state = (timer_init == WAIT_READ)? START_DOWN : IDLE;
+        case (fsm_state)
+            IDLE: begin
+                next_state = (timer_init == WAIT_READ) ? START_DOWN : IDLE;
             end
             START_DOWN: begin
-                next_state = (timer_start_down == INIT_PULSE_DOWN)? START_UP : START_DOWN;
+                next_state = (timer_start_down == INIT_PULSE_DOWN) ? START_UP : START_DOWN;
             end
             START_UP: begin
-                next_state = (timer_start_up == INIT_PULSE_UP)? WAIT_RESPONSE : START_UP;
+                next_state = (timer_start_up == INIT_PULSE_UP) ? WAIT_RESPONSE : START_UP;
             end
             WAIT_RESPONSE: begin
-                next_state = (timer_response == WAIT_RESPONSE_INIT)? RECEIVE_BITS : WAIT_RESPONSE;
+                next_state = (timer_response == WAIT_RESPONSE_INIT) ? RECEIVE_BITS : WAIT_RESPONSE;
             end
             RECEIVE_BITS: begin
-                next_state = (bit_count == 39)? CHECKSUM : RECEIVE_BITS;
+                next_state = (bit_count == DATA_BITS) ? CHECKSUM : RECEIVE_BITS;
             end
             CHECKSUM: begin
-                next_state = (valid)? IDLE : CHECKSUM;
+                next_state = (valid) ? IDLE : CHECKSUM;
+            end
+            default: begin
+                next_state = IDLE;
             end
         endcase
     end
 
+    // Lógica de los estados
     always @(posedge clk) begin
-        if (rst) begin
+        if (rst == 0) begin
             dht11_out <= 1'b1;
             valid <= 1'b0;
-            timer_init <= 'b0;
-            timer_start_up <= 'b0;
-            timer_start_down <= 'b0;
-            timer_response <= 'b0;
-            timer_wait_data <= 'b0;
-            timer_bits <= 'b0;
-            shift_reg <= 'b0;
-            bit_done <= 1'b0;
-            bit_count <='b0;
+            timer_init <= 0;
+            timer_start_up <= 0;
+            timer_start_down <= 0;
+            timer_response <= 0;
+            timer_wait_data <= 0;
+            timer_bits <= 0;
+            bit_count <= 0;
+            flag <= 0;
+            shift_reg <= 0;
         end else begin
-            case (next_state)
+            case (fsm_state)
                 IDLE: begin
                     valid <= 1'b0;
                     timer_init <= timer_init + 1;
+                    timer_start_down <= 0;
+                    timer_start_up <= 0;
+                    timer_response <= 0;
+                    timer_bits <= 0;
+                    checksum <= 0;
+                    sum_reg1 <= 0;
+                    sum_reg2 <= 0;
+                    sum_reg3 <= 0;
+                    sum_reg4 <= 0;
                 end
                 START_DOWN: begin
                     dht11_out <= 1'b0;
@@ -145,66 +158,51 @@ module dht11_controller #(parameter WAIT_READ=25000000,
                 end
                 WAIT_RESPONSE: begin
                     timer_response <= timer_response + 1;
-                    timer_bits <= 'b0;
                 end
                 RECEIVE_BITS: begin
-                    timer_bits <= 'b0;
-                    if(dht11_io == 1'b1) begin
-                        timer_bits <= timer_bits +1;
-                    end  else begin
-                        if (timer_bits == ONE_70u || timer_bits == ZERO_24u) begin
-                            shift_reg[bit_count] <=  (timer_bits == ONE_70u) ? 1'b1 : 1'b0;
-                            bit_count <= bit_count + 1;  
-                        end 
+                    if (dht11_io_prev == 1'b1 && dht11_io_sync == 1'b0) begin
+                        bit_count <= bit_count + 1;
+                        if (timer_bits >= ONE_70u) begin
+                            shift_reg[bit_count] <= 1'b1;
+                        end else begin
+                            shift_reg[bit_count] <= 1'b0;
+                        end
+                        timer_bits <= 0;
+                    end else if (dht11_io_sync == 1'b1) begin
+                        timer_bits <= timer_bits + 1;
                     end
                 end
                 CHECKSUM: begin
-                    bit_count <= 'b0;
+						  bit_count <= 0;
                     sum_reg1 <= shift_reg[7:0];
                     sum_reg2 <= shift_reg[15:8];
                     sum_reg3 <= shift_reg[23:16];
                     sum_reg4 <= shift_reg[31:24];
-                    sum_reg5 <= shift_reg[39:32];
-                    sum_reg <= shift_reg[7:0] + shift_reg[15:8] + shift_reg[23:16] + shift_reg[31:24];
                     checksum <= shift_reg[39:32];
-                    valid <= (shift_reg[7:0] + shift_reg[15:8] + shift_reg[23:16] + shift_reg[31:24] == shift_reg[39:32]) ;
+                    valid <= (sum_reg1 + sum_reg2 + sum_reg3 + sum_reg4 == checksum);
+                    timer_init <= 0;
                 end
             endcase
         end
     end
 
-    assign dht11_dir = (fsm_state == START_UP || fsm_state == START_DOWN)? 1'b1 : 1'b0;
+    // Control de la dirección de dht11_io
+    assign dht11_dir = (fsm_state == START_UP || fsm_state == START_DOWN) ? 1'b1 : 1'b0;
 
-    
-    // always@(posedge clk)begin
-    //     if(rst) begin
-    //         timer_bits <= 'b0;
-    //         bit_count <= 'b0;
-    //     end else begin
-    //         if (fsm_state == RECEIVE_BITS) begin
-    //             if (reg_timer_bits == ONE_70u || reg_timer_bits == ZERO_24u) begin
-    //                 shift_reg[bit_count] <=  (reg_timer_bits == ONE_70u) ? 1'b1 : 1'b0;
-    //                 bit_count <= bit_count + 1;  
-    //             end else if (fsm_state == CHECKSUM) begin
-    //                 bit_count <= 'b0;
-    //             end
-    //         end
-    //     end
-    // end
-
-    // assign reg_timer_bits = (dht11_io == 0)? timer_bits : 'b0;
-   
-
-    always@(posedge clk)begin
-        if(rst)begin
-            humidity <= 0;
-            temperature <= 0;
-        end else begin
-            humidity <= shift_reg[15:0];
-            temperature<= shift_reg[31:16];
-        end
-    end
-
+    // Asignación del estado actual
     assign state = fsm_state;
-        
+
+    // Instancia del controlador LCD
+    LCD1602_controller #(4, 32, 16, 1, COUNT_LCD) lcd(
+        .clk(clk),
+        .reset(rst),
+        .ready_i(1'b1),
+        .input_data1(sum_reg1),
+        .rs(rs),
+        .rw(rw),
+        .enable(enable),
+        .ready2wr(ready2wr),
+        .data(data)
+    );
+
 endmodule
